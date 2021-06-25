@@ -1,0 +1,64 @@
+; SPDX-License-Identifier: BSD-3-Clause
+; Copyright (c) 2020 Dmitry Kozlyuk
+
+[Version]
+Signature = "$WINDOWS NT$"
+Class = %ClassName%
+ClassGuid = {78A1C341-4539-11d3-B88D-00C04FAD5171}
+Provider = %ManufacturerName%
+CatalogFile = virt2phys.cat
+DriverVer =
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg = virt2phys_ClassReg
+
+[virt2phys_ClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+virt2phys.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%virt2phys.DeviceDesc%=virt2phys_Device, Root\virt2phys
+
+[virt2phys_Device.NT]
+CopyFiles = Drivers_Dir
+
+[Drivers_Dir]
+virt2phys.sys
+
+;-------------- Service installation
+[virt2phys_Device.NT.Services]
+AddService = virt2phys,%SPSVCINST_ASSOCSERVICE%, virt2phys_Service_Inst
+
+; -------------- virt2phys driver install sections
+[virt2phys_Service_Inst]
+DisplayName    = %virt2phys.SVCDESC%
+ServiceType    = 1 ; SERVICE_KERNEL_DRIVER
+StartType      = 3 ; SERVICE_DEMAND_START
+ErrorControl   = 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\virt2phys.sys
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "Dmitry Kozlyuk"
+ClassName = "Kernel bypass"
+DiskName = "virt2phys Installation Disk"
+virt2phys.DeviceDesc = "Virtual to physical address translator"
+virt2phys.SVCDESC = "virt2phys Service"

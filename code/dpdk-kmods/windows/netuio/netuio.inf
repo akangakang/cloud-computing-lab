@@ -1,0 +1,105 @@
+; SPDX-License-Identifier: BSD-3-Clause
+; Copyright (c) Microsoft Corporation. All rights reserved
+;
+; netuio.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=%ClassName%
+ClassGuid={78912BC1-CB8E-4B28-A329-F322EBADBE0F}
+Provider=%Provider%
+CatalogFile=netuio.cat
+DriverVer=
+
+[ClassInstall32]
+Addreg=netuioClassReg
+
+[netuioClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard, NT$ARCH$
+
+[Standard.NT$ARCH$]
+%netuio.DeviceDesc%=netuio_Device, Root\netuio
+%Intel.F1572.Description%=netuio_Device, PCI\VEN_8086&DEV_1572
+%Intel.F1580.Description%=netuio_Device, PCI\VEN_8086&DEV_1580
+%Intel.F1581.Description%=netuio_Device, PCI\VEN_8086&DEV_1581
+%Intel.F1583.Description%=netuio_Device, PCI\VEN_8086&DEV_1583
+%Intel.F1584.Description%=netuio_Device, PCI\VEN_8086&DEV_1584
+%Intel.F1585.Description%=netuio_Device, PCI\VEN_8086&DEV_1585
+%Intel.F1586.Description%=netuio_Device, PCI\VEN_8086&DEV_1586
+%Intel.F1589.Description%=netuio_Device, PCI\VEN_8086&DEV_1589
+%Intel.F158A.SFP28.Description%=netuio_Device, PCI\VEN_8086&DEV_158A
+%Intel.F158B.SFP28.Description%=netuio_Device, PCI\VEN_8086&DEV_158B
+%Intel.F15FF.Description%=netuio_Device, PCI\VEN_8086&DEV_15FF
+%Intel.F101F.Description%=netuio_Device, PCI\VEN_8086&DEV_101F
+%Intel.F104F.Description%=netuio_Device, PCI\VEN_8086&DEV_104F
+%Intel.F104E.Description%=netuio_Device, PCI\VEN_8086&DEV_104E
+
+[netuio_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+netuio.sys
+
+[netuio_Device.NT.HW]
+AddReg=Device.HW.Registry
+
+[Device.HW.Registry]
+; Ensure that only administrators can access our device object.
+HKR,,Security,,"D:P(A;;GA;;;SY)(A;;GA;;;BA)"
+
+;-------------- Service installation
+[netuio_Device.NT.Services]
+AddService = netuio,%SPSVCINST_ASSOCSERVICE%, netuio_Service_Inst
+
+; -------------- netuio driver install sections
+[netuio_Service_Inst]
+DisplayName    = %netuio.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\netuio.sys
+AddReg         = DMAr.reg
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+netuio.sys  = 1,,
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName = "Microsoft"
+Provider = "Vendor"
+ClassName = "Windows UIO"
+DiskName = "DPDK netUIO Installation Disk"
+netuio.DeviceDesc = "netuio Device"
+Intel.F1572.Description = "Intel(R) Ethernet Controller X710 for 10GbE SFP+"
+Intel.F1580.Description = "Intel(R) Ethernet Controller XL710 for 40GbE backplane"
+Intel.F1581.Description = "Intel(R) Ethernet Controller X710 for 10GbE backplane"
+Intel.F1583.Description = "Intel(R) Ethernet Converged Network Adapter XL710-Q2"
+Intel.F1584.Description = "Intel(R) Ethernet Controller XL710 for 40GbE QSFP+"
+Intel.F1585.Description = "Intel(R) Ethernet Controller XL710 for 10GbE QSFP+"
+Intel.F1586.Description = "Intel(R) Ethernet Controller X710 for 10GBASE-T"
+Intel.F1589.Description = "Intel(R) Ethernet Converged Network Adapter X710-T"
+Intel.F158A.SFP28.Description = "Intel(R) Ethernet Controller XXV710 for 25GbE backplane"
+Intel.F158B.SFP28.Description = "Intel(R) Ethernet Controller XXV710 for 25GbE SFP28"
+Intel.F15FF.Description = "Intel(R) Ethernet Controller X710 for 10GBASE-T"
+Intel.F101F.Description = "Intel(R) Ethernet Controller V710 for 5GBASE-T"
+Intel.F104F.Description = "Intel(R) Ethernet Controller X710 for 10 Gigabit backplane"
+Intel.F104E.Description = "Intel(R) Ethernet Controller X710 for 10 Gigabit SFP+"
+netuio.SVCDESC = "netuio Service"
+
+[DMAr.reg]
+HKR,Parameters,DmaRemappingCompatible,0x00010001,1

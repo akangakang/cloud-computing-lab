@@ -1,0 +1,10 @@
+dpdk-kmods can include kernel source code for various operating systems.
+
+DPDK is focused on userspace libraries, so it is encouraged contributing
+and using vanilla kernels as much as possible.
+Some kernel modules were historically parts of DPDK,
+and are hosted in its directory kernel/.
+Now the preference is to contribute kernel modules to the upstream project
+if possible, otherwise to host kernel code in dpdk-kmods.git.
+
+The license can be BSD-3-Clause or GPL-2.0.
