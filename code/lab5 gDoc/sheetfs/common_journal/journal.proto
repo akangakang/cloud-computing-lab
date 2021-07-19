@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "github.com/fourstring/sheetfs/common_journal;common_journal";
+
+package common_journal;
+
+message Checkpoint {
+  int64 lastEntryOffset = 1;
+  int64 nextEntryOffset = 2;
+}
