@@ -1,0 +1,3 @@
+[submodule "sheetfs"]
+	path = sheetfs
+	url = git@github.com:fourstring/sheetfs.git

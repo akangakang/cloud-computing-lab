@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option go_package = "github.com/fourstring/sheetfs/master/journal/entry;journal_entry";
+
+package common_journal;
+
+message Empty {};
+
+enum State {
+    PRESENT = 0;
+    ABSENT = 1;
+}
+
+message CellEntry {
+    State target_state = 1;
+    int64 cell_id = 2;
+    uint64 offset = 3;
+    uint64 size = 4;
+    uint64 chunk_id = 5;
+    string sheet_name = 6;
+}
+
+message ChunkEntry {
+    State target_state = 1;
+    uint64 id = 2;
+    uint64 version = 3;
+    string datanode = 4;
+}
+
+message FileMapEntry {
+    State target_state = 1;
+    string filename = 2;
+    string cells_table_name = 3;
+    bool recycled = 4;
+    int64 recycled_timestamp = 5;
+}
+
+message MasterEntry {
+    oneof _Cell {
+        Empty e1 = 1;
+        CellEntry cell = 2;
+    }
+    oneof _Chunk {
+        Empty e2 = 3;
+        ChunkEntry chunk = 4;
+    }
+    oneof _FileMap {
+        Empty e3 = 5;
+        FileMapEntry map_entry = 6;
+    }
+}

@@ -1,0 +1,4 @@
+.idea/
+venv/
+**/*.db
+**/chunk_*

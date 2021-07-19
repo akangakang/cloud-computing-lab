@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+option go_package = "github.com/fourstring/sheetfs/protocol;fs_rpc";
+
+package sheetfs;
+
+message Empty {};
+
+service MasterNode {
+    rpc RegisterDataNode(RegisterDataNodeRequest) returns (RegisterDataNodeReply) {}
+    rpc CreateSheet(CreateSheetRequest) returns (CreateSheetReply) {}
+    rpc DeleteSheet(DeleteSheetRequest) returns (DeleteSheetReply) {}
+    rpc OpenSheet(OpenSheetRequest) returns (OpenSheetReply) {}
+    rpc ReadSheet(ReadSheetRequest) returns (ReadSheetReply) {}
+    rpc RecycleSheet(RecycleSheetRequest) returns (RecycleSheetReply) {}
+    rpc ResumeSheet(ResumeSheetRequest) returns (ResumeSheetReply) {}
+    rpc ListSheets(Empty) returns (ListSheetsReply) {}
+    rpc ReadCell(ReadCellRequest) returns (ReadCellReply) {}
+    rpc WriteCell(WriteCellRequest) returns (WriteCellReply) {}
+}
+
+service DataNode {
+    rpc ReadChunk(ReadChunkRequest) returns (ReadChunkReply) {}
+    rpc WriteChunk(WriteChunkRequest) returns (WriteChunkReply) {}
+    rpc DeleteChunk(DeleteChunkRequest) returns (DeleteChunkReply) {}
+}
+
+enum Status {
+    OK = 0;
+    Exist = 1;
+    NotFound = 2;
+    WrongVersion = 3;
+    Invalid = 4;
+    Unavailable = 5;
+}
+
+message RegisterDataNodeRequest {
+    string addr = 1;
+}
+
+message RegisterDataNodeReply {
+    Status status = 1;
+}
+
+message CreateSheetRequest {
+    string filename = 1;
+}
+
+message CreateSheetReply {
+    Status status = 1;
+    uint64 fd = 2;
+}
+
+message DeleteSheetRequest {
+    string filename = 1;
+}
+
+message DeleteSheetReply {
+    Status status = 1;
+}
+
+message OpenSheetRequest {
+    string filename = 1;
+}
+
+message Chunk {
+    uint64 id = 1;
+    string datanode = 2;
+    uint64 version = 3;
+    bool holds_meta = 4;
+}
+
+message OpenSheetReply {
+    Status status = 1;
+    uint64 fd = 2;
+}
+
+message ReadSheetRequest {
+    uint64 fd = 1;
+}
+
+message ReadSheetReply {
+    Status status = 1;
+    repeated Chunk chunks = 2;
+}
+
+message RecycleSheetRequest {
+    string filename = 1;
+}
+
+message RecycleSheetReply {
+    Status status = 1;
+}
+
+message ResumeSheetRequest {
+    string filename = 1;
+}
+
+message ResumeSheetReply {
+    Status status = 1;
+}
+
+message Sheet {
+    string filename = 1;
+    bool recycled = 2;
+}
+
+message ListSheetsReply {
+    Status status = 1;
+    repeated Sheet sheets = 2;
+}
+
+message Cell {
+    Chunk chunk = 1;
+    uint64 offset = 2;
+    uint64 size = 3;
+}
+
+message ReadCellRequest {
+    uint64 fd = 1;
+    uint32 row = 2;
+    uint32 column = 3;
+}
+
+message ReadCellReply {
+    Status status = 1;
+    Cell cell = 2;
+}
+
+message WriteCellRequest {
+    uint64 fd = 1;
+    uint32 row = 2;
+    uint32 column = 3;
+}
+
+message WriteCellReply {
+    Status status = 1;
+    Cell cell = 2;
+}
+
+message ReadChunkRequest {
+    uint64 id = 1;
+    uint64 offset = 2;
+    uint64 size = 3;
+    uint64 version = 4;
+}
+
+message ReadChunkReply {
+    Status status = 1;
+    uint64 version = 2;
+    bytes data = 3;
+}
+
+message WriteChunkRequest {
+    uint64 id = 1;
+    uint64 offset = 2;
+    uint64 size = 3;
+    uint64 target_size = 4;
+    uint64 version = 5;
+    string padding = 6;
+    bytes data = 7;
+}
+
+message WriteChunkReply {
+    Status status = 1;
+}
+
+message DeleteChunkRequest {
+    uint64 id = 1;
+}
+
+message DeleteChunkReply {
+    Status status = 1;
+}
